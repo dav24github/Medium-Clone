@@ -5,6 +5,6 @@ export interface AuthStateInterface {
   isSubmitting: boolean;
   currentUser: CurrentUserInterface | null;
   isLoggedIn: boolean | null;
-  validationErrors: BackendErrorInterface | null,
-  // isAnonymous: boolean;
+  validationErrors: BackendErrorInterface | null;
+  isLoading: boolean;
 }
