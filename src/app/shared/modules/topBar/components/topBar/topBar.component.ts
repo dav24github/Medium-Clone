@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { currentUserSelector, isAnonymousInSelector, isLoggedInSelector } from 'src/app/auth/store/selectors';
-import { AppStateInterface } from 'src/app/auth/types/appState.interface';
+import { AppStateInterface } from 'src/app/shared/types/appState.interface';
 import { CurrentUserInterface } from 'src/app/shared/types/currentUser.interface';
 
 @Component({
