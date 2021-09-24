@@ -1,43 +1,32 @@
-// import { HttpErrorResponse } from '@angular/common/http';
-// import { Injectable } from '@angular/core';
-// import { Actions, createEffect, ofType } from '@ngrx/effects';
-// import { of } from 'rxjs';
-// import { catchError, map, switchMap } from 'rxjs/operators';
-// import { PersistanceService } from 'src/app/shared/services/persistance.service';
-// import { CurrentUserInterface } from 'src/app/shared/types/currentUser.interface';
-// import { AuthService } from '../../services/auth.service';
-// import {
-//   getCurrentUserAction,
-//   getCurrentUserFailureAction,
-//   getCurrentUserSuccessAction,
-// } from '../actions/getCurrentUser.action';
+import { Injectable } from '@angular/core';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { FeedService } from '../../services/feed.service';
+import { GetFeedResponseInterface } from '../../types/getFeedResponse.interface';
+import {
+  getFeedAction,
+  getFeedFailureAction,
+  getFeedSuccessAction,
+} from '../actions/getFeed.action';
 
-// @Injectable()
-// export class getCurrentUserEffect {
-//   getCurrentUser$ = createEffect(() =>
-//     this.actions$.pipe(
-//       ofType(getCurrentUserAction),
-//       switchMap(() => {
-//         const token = this.persistanceService.get('accessToken');
+@Injectable()
+export class getFeedEffect {
+  getFeed$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getFeedAction),
+      switchMap(({ url }) => {
+        return this.feedService.getFeed(url).pipe(
+          map((feed: GetFeedResponseInterface) => {
+            return getFeedSuccessAction({ feed });
+          }),
+          catchError(() => {
+            return of(getFeedFailureAction());
+          })
+        );
+      })
+    )
+  );
 
-//         if(!token){
-//           return of(getCurrentUserFailureAction());
-//         }
-
-//         return this.authService.getCurrentUser().pipe(
-//           map((currentUser: CurrentUserInterface) => {
-//             return getCurrentUserSuccessAction({ currentUser });
-//           }),
-//           catchError(() => {
-//             return of(getCurrentUserFailureAction());
-//           })
-//         );
-//       })
-//     )
-//   );
-
-//   constructor(
-//     private actions$: Actions,
-//     private authService: AuthService,
-//   ) {}
-// }
+  constructor(private actions$: Actions, private feedService: FeedService) {}
+}
