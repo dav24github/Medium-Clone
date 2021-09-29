@@ -11,8 +11,7 @@ import {
   isLoadingSelector,
 } from '../../store/selectors';
 import { GetFeedResponseInterface } from '../../types/getFeedResponse.interface';
-import { parseUrl } from 'query-string';
-import { stringify } from 'querystring';
+import { parseUrl, stringify } from 'query-string';
 
 @Component({
   selector: 'mc-feed',

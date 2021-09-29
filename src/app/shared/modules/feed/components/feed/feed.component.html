@@ -1,6 +1,9 @@
 <mc-loading *ngIf="isLoading$ | async"></mc-loading>
 
-<mc-error-message></mc-error-message>
+<mc-error-message
+  *ngIf="error$ | async"
+  [message]="(error$ | async)!"
+></mc-error-message>
 
 <div *ngIf="feed$ | async">
   <div
@@ -23,7 +26,7 @@
       <h1>{{ article.title }}</h1>
       <p>{{ article.description }}</p>
       <span>Read more...</span>
-      HERE LIST OF TAGS
+      <mc-tag-list [tags]="article.tagList"></mc-tag-list>
     </a>
   </div>
   <mc-pagination

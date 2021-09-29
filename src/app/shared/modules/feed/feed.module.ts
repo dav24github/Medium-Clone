@@ -6,6 +6,7 @@ import { StoreModule } from '@ngrx/store';
 import { ErrorMessageModule } from '../errorMessage/errorMessage.module';
 import { LoadingModule } from '../loading/loading.module';
 import { PaginationModule } from '../pagination/pagination.module';
+import { TagListModule } from '../tagList/loading.module';
 
 import { FeedComponent } from './components/feed/feed.component';
 import { FeedService } from './services/feed.service';
@@ -22,6 +23,7 @@ import { feedFeatureKey } from './store/selectors';
     ErrorMessageModule,
     LoadingModule,
     PaginationModule,
+    TagListModule,
   ],
   declarations: [FeedComponent],
   exports: [FeedComponent],

@@ -3,7 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { registerAction } from '../../store/actions/register.actions';
-import { isSubmittingSelector, validationErrorsSelector } from '../../store/selectors';
+import {
+  isSubmittingSelector,
+  validationErrorsSelector,
+} from '../../store/selectors';
 import { AppStateInterface } from '../../../shared/types/appState.interface';
 import { BackendErrorInterface } from '../../../shared/types/backendErrors.interface';
 import { RegisterRequestInterface } from '../../types/registerRequest.interface';
@@ -20,7 +23,7 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private store: Store<AppStateInterface>,
+    private store: Store<AppStateInterface>
   ) {}
 
   ngOnInit(): void {
@@ -43,8 +46,8 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     const request: RegisterRequestInterface = {
-      user: this.form.value
-    }
-    this.store.dispatch(registerAction({request}));
+      user: this.form.value,
+    };
+    this.store.dispatch(registerAction({ request }));
   }
 }
