@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'mc-tag-feed',
@@ -8,12 +10,17 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class TagFeedComponent implements OnInit {
   tagName!: string | null;
-  apiUrl!: string;
+  apiUrl_!: Observable<string>;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.tagName = this.route.snapshot.paramMap.get('slug');
-    this.apiUrl = `/articles?tag=${this.tagName}`;
+
+    this.apiUrl_ = this.route.paramMap.pipe(
+      map((param: Params) => {
+        return `/articles?tag=${param.get('slug')}`;
+      })
+    );
   }
 }

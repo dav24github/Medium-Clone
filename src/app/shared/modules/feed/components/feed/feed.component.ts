@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { AppStateInterface } from 'src/app/shared/types/appState.interface';
 import { environment } from 'src/environments/environment';
 import { getFeedAction } from '../../store/actions/getFeed.action';
@@ -12,6 +12,7 @@ import {
 } from '../../store/selectors';
 import { GetFeedResponseInterface } from '../../types/getFeedResponse.interface';
 import { parseUrl, stringify } from 'query-string';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'mc-feed',
@@ -19,7 +20,8 @@ import { parseUrl, stringify } from 'query-string';
   styleUrls: ['./feed.component.scss'],
 })
 export class FeedComponent implements OnInit, OnDestroy {
-  @Input('apiUrl') apiUrlProps!: string;
+  @Input('apiUrl') apiUrlProps!: string | null;
+  @Input('apiUrlTag') apiUrlTagObsProps!: Observable<string> | null;
 
   feed$!: Observable<GetFeedResponseInterface | null>;
   error$!: Observable<string | null>;
@@ -28,6 +30,7 @@ export class FeedComponent implements OnInit, OnDestroy {
   baseUrl!: string;
   queryParamsSubscription!: Subscription;
   currentPage!: number;
+  apiSubscription!: Subscription;
 
   constructor(
     private store: Store<AppStateInterface>,
@@ -42,6 +45,7 @@ export class FeedComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.queryParamsSubscription.unsubscribe();
+    this.apiSubscription?.unsubscribe();
   }
 
   initializeListeners(): void {
@@ -62,13 +66,29 @@ export class FeedComponent implements OnInit, OnDestroy {
 
   fetchFeed(): void {
     const offset = this.currentPage * this.limit - this.limit;
-    const parsedUrl = parseUrl(this.apiUrlProps);
-    const stringifiedParams = stringify({
-      limit: this.limit,
-      offset: offset,
-      ...parsedUrl.query,
-    });
-    const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`;
-    this.store.dispatch(getFeedAction({ url: apiUrlWithParams }));
+
+    if (this.apiUrlTagObsProps) {
+      this.apiSubscription = this.apiUrlTagObsProps.subscribe((url: string) => {
+        const parsedUrl = parseUrl(url);
+        const stringifiedParams = stringify({
+          limit: this.limit,
+          offset: offset,
+          ...parsedUrl.query,
+        });
+        const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`;
+        this.store.dispatch(getFeedAction({ url: apiUrlWithParams }));
+      });
+    }
+
+    if (this.apiUrlProps) {
+      const parsedUrl = parseUrl(this.apiUrlProps);
+      const stringifiedParams = stringify({
+        limit: this.limit,
+        offset: offset,
+        ...parsedUrl.query,
+      });
+      const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`;
+      this.store.dispatch(getFeedAction({ url: apiUrlWithParams }));
+    }
   }
 }
