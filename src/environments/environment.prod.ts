@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.realworld.io/api',
+  apiUrl: 'https://conduit.productionready.io/api',
   limit: 10,
 };

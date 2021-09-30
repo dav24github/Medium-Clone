@@ -1,0 +1,44 @@
+<div class="profile-page" *ngIf="userProfile">
+  <div class="user-info">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-md-10 offset-md-1">
+          <img class="user-img" [src]="userProfile.image" />
+          <h4>{{ userProfile.username }}</h4>
+          <p>{{ userProfile.bio }}</p>
+          <div>FOLLOW USER BUTTON</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-10 offset-md-1">
+        <div class="articles-toggle">
+          <ul class="nav nav-pills outline-active">
+            <li class="nav-item">
+              <a
+                [routerLink]="['/profiles', userProfile.username]"
+                class="nav-link"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                My Post</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                [routerLink]="['/profiles', userProfile.username, 'favorites']"
+                class="nav-link"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+              >
+                Favorites Post</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

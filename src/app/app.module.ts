@@ -12,11 +12,14 @@ import { AppComponent } from './app.component';
 import { ArticleModule } from './article/article.module';
 import { AuthModule } from './auth/auth.module';
 import { CreateArticleModule } from './createArticle/createArticle.module';
+import { EditArticleModule } from './editArticle/editArticle.module';
 import { GlobalFeedModule } from './globalFeed/globalFeed.module';
+import { SettingsModule } from './settings/settings.module';
 import { TopBarModule } from './shared/modules/topBar/topBar.module';
 import { AuthInterceptor } from './shared/services/authInterceptor.service';
 import { PersistanceService } from './shared/services/persistance.service';
 import { TagFeedModule } from './tagFeed/tagFeed.module';
+import { UserProfileModule } from './userProfile/userProfile.module';
 import { YourFeedModule } from './yourFeed/yourFeed.module';
 
 @NgModule({
@@ -40,6 +43,9 @@ import { YourFeedModule } from './yourFeed/yourFeed.module';
     TagFeedModule,
     CreateArticleModule, //order matters
     ArticleModule, // because routes
+    EditArticleModule,
+    SettingsModule,
+    UserProfileModule,
   ],
   providers: [
     PersistanceService,

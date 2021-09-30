@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { AddToFavoritesModule } from '../../addToFavorites/addToFavorites.module';
 import { ErrorMessageModule } from '../errorMessage/errorMessage.module';
 import { LoadingModule } from '../loading/loading.module';
 import { PaginationModule } from '../pagination/pagination.module';
@@ -24,6 +25,7 @@ import { feedFeatureKey } from './store/selectors';
     LoadingModule,
     PaginationModule,
     TagListModule,
+    AddToFavoritesModule,
   ],
   declarations: [FeedComponent],
   exports: [FeedComponent],

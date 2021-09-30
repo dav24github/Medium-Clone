@@ -11,5 +11,5 @@ export interface ArticleInterface {
   description: string;
   author: ProfileInterface;
   favorited: boolean;
-  favoritedCount: number;
+  favoritesCount: number;
 }
