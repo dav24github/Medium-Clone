@@ -1,18 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Observable, Subscription, combineLatest } from 'rxjs';
 import { select, Store } from '@ngrx/store';
-import { combineLatest, Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+
 import {
-  errorSelector,
   isLoadingSelector,
-} from 'src/app/article/store/selectors';
-import { currentUserSelector } from 'src/app/auth/store/selectors';
-import { AppStateInterface } from 'src/app/shared/types/appState.interface';
-import { CurrentUserInterface } from 'src/app/shared/types/currentUser.interface';
-import { getUserProfileAction } from '../../store/actions/getUserProfile';
-import { userProfileSelector } from '../../store/selectors';
+  errorSelector,
+  userProfileSelector,
+} from './../../store/selectors';
 import { UserProfileInterface } from '../../types/userProfile.interface';
+import { currentUserSelector } from 'src/app/auth/store/selectors';
+import { map } from 'rxjs/operators';
+import { CurrentUserInterface } from 'src/app/shared/types/currentUser.interface';
+import { AppStateInterface } from 'src/app/shared/types/appState.interface';
+import { getUserProfileAction } from '../../store/actions/getUserProfile';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'mc-user-profile',
@@ -28,6 +30,8 @@ export class UserProfileComponent implements OnInit {
   slug!: string | null;
   isCurrentUserProfile$!: Observable<boolean | null>;
 
+  myVar!: string;
+
   constructor(
     private store: Store<AppStateInterface>,
     private route: ActivatedRoute,
@@ -36,18 +40,15 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeValues();
-    this.fetchData();
     this.initializeListeners();
+    console.log('Nuevo');
   }
 
   initializeValues(): void {
-    const isFavorites = this.router.url.includes('favorites');
     this.slug = this.route.snapshot.paramMap.get('slug');
     this.isLoading$ = this.store.pipe(select(isLoadingSelector));
     this.error$ = this.store.pipe(select(errorSelector));
-    this.apiUrl = isFavorites
-      ? `article?favorited=${this.slug}`
-      : `/articles?author=${this.slug}`;
+
     this.isCurrentUserProfile$ = combineLatest([
       this.store.pipe(select(currentUserSelector)),
       this.store.pipe(select(userProfileSelector)),
@@ -65,6 +66,13 @@ export class UserProfileComponent implements OnInit {
     );
   }
 
+  getApiUrl(): string {
+    const isFavorites = this.router.url.includes('favorites');
+    return isFavorites
+      ? `/articles?favorited=${this.slug}`
+      : `/articles?author=${this.slug}`;
+  }
+
   initializeListeners(): void {
     this.userProfileSubscription = this.store
       .pipe(select(userProfileSelector))
@@ -73,9 +81,18 @@ export class UserProfileComponent implements OnInit {
           this.userProfile = userProfile;
         }
       });
+
+    this.route.params.subscribe((params: Params) => {
+      this.slug = params.slug;
+      this.fetchUserProfile();
+    });
   }
 
-  fetchData(): void {
+  fetchUserProfile(): void {
     this.store.dispatch(getUserProfileAction({ slug: this.slug || '' }));
+  }
+
+  onClick(): void {
+    this.slug = 'asdasd';
   }
 }

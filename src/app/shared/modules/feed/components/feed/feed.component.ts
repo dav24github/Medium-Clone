@@ -1,27 +1,33 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { select, Store } from '@ngrx/store';
-import { Observable, of, Subscription } from 'rxjs';
-import { AppStateInterface } from 'src/app/shared/types/appState.interface';
-import { environment } from 'src/environments/environment';
-import { getFeedAction } from '../../store/actions/getFeed.action';
 import {
-  errorSelector,
+  Component,
+  Input,
+  OnInit,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Store, select } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { stringify, parseUrl } from 'query-string';
+
+import { environment } from '../../../../../../environments/environment';
+import { getFeedAction } from '../../store/actions/getFeed.action';
+import { GetFeedResponseInterface } from './../../types/getFeedResponse.interface';
+import {
   feedSelector,
+  errorSelector,
   isLoadingSelector,
-} from '../../store/selectors';
-import { GetFeedResponseInterface } from '../../types/getFeedResponse.interface';
-import { parseUrl, stringify } from 'query-string';
-import { map } from 'rxjs/operators';
+} from './../../store/selectors';
+import { AppStateInterface } from 'src/app/shared/types/appState.interface';
 
 @Component({
   selector: 'mc-feed',
   templateUrl: './feed.component.html',
   styleUrls: ['./feed.component.scss'],
 })
-export class FeedComponent implements OnInit, OnDestroy {
-  @Input('apiUrl') apiUrlProps!: string | null;
-  @Input('apiUrlTag') apiUrlTagObsProps!: Observable<string> | null;
+export class FeedComponent implements OnInit, OnDestroy, OnChanges {
+  @Input('apiUrl') apiUrlProps!: string;
 
   feed$!: Observable<GetFeedResponseInterface | null>;
   error$!: Observable<string | null>;
@@ -43,18 +49,18 @@ export class FeedComponent implements OnInit, OnDestroy {
     this.initializeListeners();
   }
 
-  ngOnDestroy(): void {
-    this.queryParamsSubscription.unsubscribe();
-    this.apiSubscription?.unsubscribe();
+  ngOnChanges(changes: SimpleChanges) {
+    const isApiUrlChanged =
+      !changes.apiUrlProps.firstChange &&
+      changes.apiUrlProps.currentValue !== changes.apiUrlProps.previousValue;
+
+    if (isApiUrlChanged) {
+      this.fetchFeed();
+    }
   }
 
-  initializeListeners(): void {
-    this.queryParamsSubscription = this.route.queryParams.subscribe(
-      (params: Params) => {
-        this.currentPage = params.page || '1';
-        this.fetchFeed();
-      }
-    );
+  ngOnDestroy(): void {
+    this.queryParamsSubscription.unsubscribe();
   }
 
   initializeValues(): void {
@@ -64,31 +70,24 @@ export class FeedComponent implements OnInit, OnDestroy {
     this.baseUrl = this.router.url.split('?')[0];
   }
 
+  initializeListeners(): void {
+    this.queryParamsSubscription = this.route.queryParams.subscribe(
+      (params: Params) => {
+        this.currentPage = Number(params.page || '1');
+        this.fetchFeed();
+      }
+    );
+  }
+
   fetchFeed(): void {
     const offset = this.currentPage * this.limit - this.limit;
-
-    if (this.apiUrlTagObsProps) {
-      this.apiSubscription = this.apiUrlTagObsProps.subscribe((url: string) => {
-        const parsedUrl = parseUrl(url);
-        const stringifiedParams = stringify({
-          limit: this.limit,
-          offset: offset,
-          ...parsedUrl.query,
-        });
-        const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`;
-        this.store.dispatch(getFeedAction({ url: apiUrlWithParams }));
-      });
-    }
-
-    if (this.apiUrlProps) {
-      const parsedUrl = parseUrl(this.apiUrlProps);
-      const stringifiedParams = stringify({
-        limit: this.limit,
-        offset: offset,
-        ...parsedUrl.query,
-      });
-      const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`;
-      this.store.dispatch(getFeedAction({ url: apiUrlWithParams }));
-    }
+    const parsedUrl = parseUrl(this.apiUrlProps);
+    const stringifiedParams = stringify({
+      limit: this.limit,
+      offset,
+      ...parsedUrl.query,
+    });
+    const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`;
+    this.store.dispatch(getFeedAction({ url: apiUrlWithParams }));
   }
 }

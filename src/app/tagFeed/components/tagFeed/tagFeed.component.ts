@@ -10,17 +10,13 @@ import { map } from 'rxjs/operators';
 })
 export class TagFeedComponent implements OnInit {
   tagName!: string | null;
-  apiUrl_!: Observable<string>;
+  apiUrl!: string;
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.tagName = this.route.snapshot.paramMap.get('slug');
 
-    this.apiUrl_ = this.route.paramMap.pipe(
-      map((param: Params) => {
-        return `/articles?tag=${param.get('slug')}`;
-      })
-    );
+    this.apiUrl = `/articles?tag=${this.tagName}`;
   }
 }

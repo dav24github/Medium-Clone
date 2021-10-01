@@ -6,7 +6,14 @@
           <img class="user-img" [src]="userProfile.image" />
           <h4>{{ userProfile.username }}</h4>
           <p>{{ userProfile.bio }}</p>
-          <div>FOLLOW USER BUTTON</div>
+          <div>
+            <a
+              *ngIf="isCurrentUserProfile$ | async"
+              class="btn btn-sm btn-outline-secondary action-btn"
+              [routerLink]="['/settings']"
+              >Edit Profile Settings</a
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -38,6 +45,7 @@
             </li>
           </ul>
         </div>
+        <mc-feed [apiUrl]="getApiUrl()"></mc-feed>
       </div>
     </div>
   </div>
